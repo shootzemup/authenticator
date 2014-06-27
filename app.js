@@ -33,13 +33,13 @@ MongoClient.connect(conf.net.mongoUrl, {native_parser: true}, function (err, db)
 		        	// called once the route is found and the request
 		        	// is completely processed.
 		        	socket.write(output, 'utf8');
-		        	socket.end()
+		        	socket.end('\n')
 		        });
 		    });
 		    
 		    // Add a 'close' event handler to this instance of socket
 		    socket.on('close', function(data) {
-		        conf.debug('CLOSED: ', socket.remoteAddress, ' ', socket.remotePort, 'data=', data);
+		        conf.debug('CLOSED');
 		    });
 		    
 		});

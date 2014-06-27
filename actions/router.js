@@ -10,26 +10,33 @@ end with `$` as these special characters will be automatically added
 when parsing the query.
 All the handlers should have the following structure:
 ```
-myHandler = function (socket, group1, group2, ...) { do_stuff() };
+myHandler = function (db, group1, group2, ... done) { do_stuff() };
 ```
-Where socket is the current client's socket. See 
-http://nodejs.org/api/net.html#net_class_net_socket for more info 
+Where db is the db objects and done is a callback that looks like:
+```
+function (str) {
+	socket.write(str);
+	socket.end('\n');
+}
+```
 */
 var routes = {
-	"ping": function (db, done) { done('ping\n'); },
-	"echo/(.+)": function (db, word, done) { done(word+'\n'); },
+	"ping": function (db, done) { done('ping'); },
+	"echo/(.+)": function (db, word, done) { done(word+''); },
 	"authent/(\\w+)/(.+)":  authent.authenticate,
+	"createUser/(\\w+)/(.+)/(.+)": authent.createUser,
 	"(.*)": function (db, data, done) {
 		console.error('Unable to find any route for input:', data);
-		done('error\n');
+		done('Error: command not found.');
 	}
 };
 
 /*
 Route parser. Will call the appropriate function depending
 on the route matched by `data`.
-The parameter `socket` will be given to the called function as its 
-first parameter.
+The parameter `db` will be given to the called function as its 
+first parameter, the parameter `done` will be given to the called
+function as its last one.
 */
 exports.parseRoutes = function (db, data, done) {
 	// successively test all the routes.

@@ -9,8 +9,8 @@ account = {
 }
 */
 
-insert = function (username, password, done) {
-	this.insert({
+exports.insert = function (db, username, password, done) {
+	db.Accounts.insert({
 		username: username,
 		password: password,
 		last_connection_date: null,
@@ -18,19 +18,18 @@ insert = function (username, password, done) {
 	}, done);
 };
 
-authenticate = function (username, password, done) {
-	this.findOne({
+exports.authenticate = function (db, username, password, done) {
+	db.Accounts.findOne({
 		username: username,
 		password: password
 	}, done);
 };
 
-notifyConnection = function (id) {
-	this.update({_id: id}, {last_connection_date: Date.now()}, function (err, res) {
+exports.notifyConnection = function (db, id) {
+	db.Accounts.update({_id: id}, {last_connection_date: Date.now()}, function (err, res) {
 		if (err) throw err;
 	});
 };
-
 
 exports.initialize = function (db, done) {
 	// ensure that the collection exists
