@@ -27,7 +27,7 @@ Escape character is '^]'.
 ping
 > echo/test
 test
-> authent/trolilol/b01c[Qpg/a
+> authent/trolilol/m0tdEp@ss/a
 Access granted
 ```
 See the application log for more info.
