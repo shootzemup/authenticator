@@ -33,7 +33,7 @@ MongoClient.connect(conf.net.mongoUrl, {native_parser: true}, function (err, db)
 		        	// called once the route is found and the request
 		        	// is completely processed.
 		        	socket.write(output, 'utf8');
-		        	socket.end('\n')
+		        	socket.write('\n')
 		        });
 		    });
 		    
