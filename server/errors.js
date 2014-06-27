@@ -1,8 +1,13 @@
 
 onAddressUsed = function (error) {
-	console.error('Address already used', error)
+	console.error('Address already used', error);
 };
 
-exports.handlers = {
-	'EADDRINUSE': onAddressUsed
+defaultError = function (error) {
+	console.error('An unexpected error occured: ', error);
+}
+
+exports.errorHandlers = {
+	'EADDRINUSE': onAddressUsed,
+	'DEFAULT': defaultError
 };
