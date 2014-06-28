@@ -6,26 +6,30 @@ accountsModel = require('../models/accountsModel');
 exports.authenticate = function (db, username, password, done) {
 	conf.debug('Authenticating:', username, ':', password);
 	// retrieve salt
-	accountsModel.getSalt(db, username, function (err, salt) {
+	accountsModel.getSalt(db, username, function (err, res) {
 		if (err) throw err;
-		if (!salt)
+		if (!res) {
 			return done("restricted access: unknown user `" + username + 
 				 "' or invalid password.");
-		// compute checksum of salt+pass+salt
-		var shasum = crypto.createHash(conf.crypto.hash_algo);
-		shasum.update(salt + password + salt);
-		// authenticate the user
-		accountsModel.authenticate(db, username, shasum.digest(conf.crypto.digest), function (err, res) {
-			if (err) throw err;
-			if (res && res._id) {
-				// update the last_connection_date
-				accountsModel.notifyConnection(db, res._id);
-				done("Access granted");
-			}
-			else 
-				done("Restricted access: unknown user `" + username + 
-					 "' or invalid password.");
-		});
+		}
+		else {
+			conf.debug("Salt found for user: " + username);
+			// compute checksum of salt+pass+salt
+			var shasum = crypto.createHash(conf.crypto.hash_algo);
+			shasum.update(res.salt + password + res.salt);
+			// authenticate the user
+			accountsModel.authenticate(db, username, shasum.digest(conf.crypto.digest), function (err, res) {
+				if (err) throw err;
+				if (res && res._id) {
+					// update the last_connection_date
+					accountsModel.notifyConnection(db, res._id);
+					done("Access granted");
+				}
+				else 
+					done("Restricted access: unknown user `" + username + 
+						 "' or invalid password.");
+			});
+		}
 	});
 };
 
@@ -53,6 +57,7 @@ exports.createUser = function (db, username, password, password_repeat, done) {
 			return done('Unable to create user `' + username + 
 						'\'. User may already exist.');
 		}
+		conf.debug("Account " + username + "successfully created!");
 		done("Account " + username + " successfully created!");
 	});
 }

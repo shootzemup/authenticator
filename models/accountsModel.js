@@ -30,17 +30,15 @@ exports.authenticate = function (db, username, password, done) {
 exports.getSalt = function (db, username, done) {
 	db.Accounts.findOne({
 		username: username
-	}, {
-		salt: 1
-	}, function (err, res) {
-		if (err) done(err);
-		if (res) done(null, res.salt);
-		done();
-	})
+	}, done);
 }
 
 exports.notifyConnection = function (db, id) {
-	db.Accounts.update({_id: id}, {last_connection_date: Date.now()}, function (err, res) {
+	db.Accounts.update({_id: id}, {
+		$set: {
+			last_connection_date: Date.now()
+		}
+	}, function (err, res) {
 		if (err) throw err;
 	});
 };
