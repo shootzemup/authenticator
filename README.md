@@ -7,6 +7,8 @@ Manage user's authentication
 
 Here are the mandatory requirements to run the application:
 * nodejs version >= 0.10.29. [Download here](http://nodejs.org/download/)
+* mongodb version >= 2.6. [Download here](http://www.mongodb.org/downloads)
+* mongodb node module. To install: `npm install mongodb`
 
 ## Usage: 
 
