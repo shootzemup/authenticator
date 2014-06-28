@@ -24,8 +24,8 @@ function (str) {
 var routes = {
 	"ping": function (db, done) { done('ping'); },
 	"echo/(.+)": function (db, word, done) { done(word+''); },
-	"authent/(\\w+)/(.+)":  authent.authenticate,
-	"createUser/(\\w+)/(.+)/(.+)": authent.createUser,
+	"user/authent/(\\w+)/(.+)":  authent.authenticate,
+	"user/create/(\\w+)/(.+)/(.+)": authent.createUser,
 	"server/connect/(.+)/(.+)/(.+)": loadBalancer.newGameServer,
 	"server/disconnect/(.+)/(.+)": loadBalancer.deleteGameServer,
 	"(.*)": function (db, data, done) {
@@ -59,7 +59,7 @@ exports.parseRoutes = function (db, data, done) {
 			}
 			catch (err) {
 				console.error(err)
-				done("An unexpected error occured, please try again.");
+				return done("An unexpected error occured, please try again.");
 			}
 		}
 	};

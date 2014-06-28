@@ -15,7 +15,7 @@ exports.newGameServer = function (db, name, ip, secret, done) {
 }
 
 // called when a game server disconnect from the network
-exports.deleteGameServer = function (Db, ip, secret, done) {
+exports.deleteGameServer = function (db, ip, secret, done) {
 	if (!conf.DEBUG && secret != conf.internal.secret)
 		return done("Invalid secret token");
 	gameServersModel.removeByIp(db, ip, function (err, res) {

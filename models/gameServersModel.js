@@ -20,24 +20,16 @@ exports.insert = function (db, name, ip, done) {
 
 exports.getLessLoaded = function (db, done) {
 	db.GameServers.aggregate([{
-		$group: {
-			_id: {
-				_id: '$_id',
-				name: '$name',
-				ip: '$ip',
-			},
-			minLoad: {
-				$min: '$load'
-			}
-		}
+		$sort: { load: 1 }
+	}, {
+		$limit: 1
 	}], function (err, res) {
 		if (err) done(err);
 		if (res && res.length > 0) {
-			res[0]._id.load = res[0].minLoad;
-			done(null, res[0]._id);
+			done(null, res[0]);
 		}
 		else
-			done(null, null);
+			done(null, res);
 	});
 }
 
