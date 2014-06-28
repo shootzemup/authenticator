@@ -12,6 +12,9 @@ conf = {
 		digest: 'base64',
 		salt_len: 64
 	},
+	internal: {
+		secret: 'CHANGE ME: NREXxo9ZuSEsoPO+wCqnwYpi53Io+m5WWvkGTZrqt8s5YMllaNOK+gqDIDcmmvLhtCE2S+HdNDyKU4zdrWsuVQ=='
+	},
 	DEBUG: true,
 	debug: function () { 
 		if (!conf.DEBUG)

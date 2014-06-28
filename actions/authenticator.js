@@ -2,6 +2,8 @@ crypto = require('crypto');
 
 require('../conf');
 accountsModel = require('../models/accountsModel');
+loadBalancer = require('./loadBalancer');
+
 
 exports.authenticate = function (db, username, password, done) {
 	conf.debug('Authenticating:', username, ':', password);
@@ -23,7 +25,8 @@ exports.authenticate = function (db, username, password, done) {
 				if (res && res._id) {
 					// update the last_connection_date
 					accountsModel.notifyConnection(db, res._id);
-					done("Access granted");
+					// dispatch the user to the less loaded game server
+					loadBalancer.dispatchUser(db, done);
 				}
 				else 
 					done("Restricted access: unknown user `" + username + 

@@ -1,4 +1,5 @@
 accounts = require('./accountsModel');
+gameServers = require('./gameServersModel');
 require('../conf.js');
 /*
 This function initialize all the models in a raw.
@@ -9,8 +10,10 @@ documented exemples
 exports.initialize = function (db, done) {
 	conf.debug("Initalizing models...");
 	accounts.initialize(db, function () {
-		// other model initialization come here
-		// could use _.async for a better readability
-		done();
+		gameServers.initialize(db, function () {
+			// other model initialization come here
+			// could use _.async for a better readability
+			done();
+		});
 	});
 }

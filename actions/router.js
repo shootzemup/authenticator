@@ -1,4 +1,5 @@
 authent = require('./authenticator');
+loadBalancer = require('./loadBalancer');
 
 require('../conf');
 
@@ -25,6 +26,8 @@ var routes = {
 	"echo/(.+)": function (db, word, done) { done(word+''); },
 	"authent/(\\w+)/(.+)":  authent.authenticate,
 	"createUser/(\\w+)/(.+)/(.+)": authent.createUser,
+	"server/connect/(.+)/(.+)/(.+)": loadBalancer.newGameServer,
+	"server/disconnect/(.+)/(.+)": loadBalancer.deleteGameServer,
 	"(.*)": function (db, data, done) {
 		console.error('Unable to find any route for input:', data);
 		done('Error: command not found.');
@@ -51,7 +54,13 @@ exports.parseRoutes = function (db, data, done) {
 			params[0] = db;
 			params.push(done);
 			// see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply
-			return routes[r].apply(null, params);
+			try {
+				return routes[r].apply(null, params);
+			}
+			catch (err) {
+				console.error(err)
+				done("An unexpected error occured, please try again.");
+			}
 		}
 	};
 };
