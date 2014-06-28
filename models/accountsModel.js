@@ -4,15 +4,17 @@ Model of the accounts:
 account = {
 	username: string
 	password: string
+	salt: string
 	last_connection_date: timestamp
 	creation_date: timestamp
 }
 */
 
-exports.insert = function (db, username, password, done) {
+exports.insert = function (db, username, password, salt, done) {
 	db.Accounts.insert({
 		username: username,
 		password: password,
+		salt: salt,
 		last_connection_date: null,
 		creation_date: Date.now()
 	}, done);
@@ -24,6 +26,18 @@ exports.authenticate = function (db, username, password, done) {
 		password: password
 	}, done);
 };
+
+exports.getSalt = function (db, username, done) {
+	db.Accounts.findOne({
+		username: username
+	}, {
+		salt: 1
+	}, function (err, res) {
+		if (err) done(err);
+		if (res) done(null, res.salt);
+		done();
+	})
+}
 
 exports.notifyConnection = function (db, id) {
 	db.Accounts.update({_id: id}, {last_connection_date: Date.now()}, function (err, res) {

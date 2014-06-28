@@ -1,28 +1,53 @@
+crypto = require('crypto');
+
 require('../conf');
 accountsModel = require('../models/accountsModel');
 
 exports.authenticate = function (db, username, password, done) {
 	conf.debug('Authenticating:', username, ':', password);
-	accountsModel.authenticate(db, username, password, function (err, res) {
+	// retrieve salt
+	accountsModel.getSalt(db, username, function (err, salt) {
 		if (err) throw err;
-		if (res && res._id) {
-			accountsModel.notifyConnection(db, res._id);
-			done("Access granted");
-		}
-		else {
-			done("Restricted access: unknown user `" + username + 
+		if (!salt)
+			return done("restricted access: unknown user `" + username + 
 				 "' or invalid password.");
-		}
+		// compute checksum of salt+pass+salt
+		var shasum = crypto.createHash(conf.crypto.hash_algo);
+		shasum.update(salt + password + salt);
+		// authenticate the user
+		accountsModel.authenticate(db, username, shasum.digest(conf.crypto.digest), function (err, res) {
+			if (err) throw err;
+			if (res && res._id) {
+				// update the last_connection_date
+				accountsModel.notifyConnection(db, res._id);
+				done("Access granted");
+			}
+			else 
+				done("Restricted access: unknown user `" + username + 
+					 "' or invalid password.");
+		});
 	});
 };
+
+var getRandomSalt = function (len) {
+ return crypto.randomBytes(Math.ceil(len * 3 / 4))
+        .toString(conf.crypto.digest)   // convert to base64 format
+        .slice(0, len)        // return required number of characters
+}
+
 
 exports.createUser = function (db, username, password, password_repeat, done) {
 	if (password != password_repeat) {
 		return done("Password do not match. Try again.")
 	}
 	conf.debug("Creating user:", username, ' with password:', password);
-	accountsModel.insert(db, username, password, function (err, res) {
-		// if (err) throw err;
+	// generating salt
+	var salt = getRandomSalt(conf.crypto.salt_len);
+	// compute checksum of salt+pass+salt
+	var shasum = crypto.createHash(conf.crypto.hash_algo)
+	shasum.update(salt + password + salt);
+	// create the user
+	accountsModel.insert(db, username, shasum.digest(conf.crypto.digest), salt, function (err, res) {
 		if (err) {
 			console.error("An error occured: ", err);
 			return done('Unable to create user `' + username + 
@@ -30,7 +55,4 @@ exports.createUser = function (db, username, password, password_repeat, done) {
 		}
 		done("Account " + username + " successfully created!");
 	});
-	// 	conf.error("An error occured");
-	// 	done("Unable to create user `" + username + "'. User may already exist");
-	// }
 }
