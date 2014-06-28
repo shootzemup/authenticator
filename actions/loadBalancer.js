@@ -10,7 +10,7 @@ exports.newGameServer = function (db, name, ip, secret, done) {
 	gameServersModel.insert(db, name, ip, function (err, res) {
 		if (err)
 			console.error("The server " + name + '(' + ip + ') already exists!');
-		done("Server registered!");
+		done('server_registered');
 	})
 }
 
@@ -20,7 +20,7 @@ exports.deleteGameServer = function (db, ip, secret, done) {
 		return done("Invalid secret token");
 	gameServersModel.removeByIp(db, ip, function (err, res) {
 		if (err) throw err;
-		done("Server successfully removed")
+		done('server_removed')
 	});
 }
 
@@ -30,7 +30,7 @@ exports.dispatchUser = function (db, done) {
 		conf.debug("Less loaded:", res);
 		gameServersModel.incrementLoad(db, res._id, function (err) {
 			if (err) throw err;
-			done("Access/" + res.name + "/" + res.ip);
+			done('user_dispatched', res.name, res.ip);
 		})
 	})
 }

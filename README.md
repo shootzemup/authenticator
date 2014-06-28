@@ -57,5 +57,4 @@ See the application log for more info.
 
 ## TODOs:
 * Generate a unique token sent to an authenticated client AND to the assigned server, so that the game server will be sure that an new client is properly identified.
-* Find a way to normalize and centralize the response of the server.
 * Suggestion: encrypt the communications between client and server or not? 

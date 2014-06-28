@@ -11,8 +11,7 @@ exports.authenticate = function (db, username, password, done) {
 	accountsModel.getSalt(db, username, function (err, res) {
 		if (err) throw err;
 		if (!res) {
-			return done("restricted access: unknown user `" + username + 
-				 "' or invalid password.");
+			return done('user_restricted_access', username);
 		}
 		else {
 			conf.debug("Salt found for user: " + username);
@@ -29,8 +28,7 @@ exports.authenticate = function (db, username, password, done) {
 					loadBalancer.dispatchUser(db, done);
 				}
 				else 
-					done("Restricted access: unknown user `" + username + 
-						 "' or invalid password.");
+					done('user_restricted_access', username);
 			});
 		}
 	});
@@ -45,7 +43,7 @@ var getRandomSalt = function (len) {
 
 exports.createUser = function (db, username, password, password_repeat, done) {
 	if (password != password_repeat) {
-		return done("Password do not match. Try again.")
+		return done('account_passwords_mismatch')
 	}
 	conf.debug("Creating user:", username, ' with password:', password);
 	// generating salt
@@ -57,10 +55,9 @@ exports.createUser = function (db, username, password, password_repeat, done) {
 	accountsModel.insert(db, username, shasum.digest(conf.crypto.digest), salt, function (err, res) {
 		if (err) {
 			console.error("An error occured: ", err);
-			return done('Unable to create user `' + username + 
-						'\'. User may already exist.');
+			return done('account_creation_error', username);
 		}
 		conf.debug("Account " + username + "successfully created!");
-		done("Account " + username + " successfully created!");
+		done('account_created');
 	});
 }
