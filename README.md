@@ -55,6 +55,9 @@ See the application log for more info.
 * `server/disconnect/<server ip>/<secret token>`: notify the authenticating server that the game server at this ip will not take any new incomming connection. It will be deleted from the database.
 
 
+## Workflow
+![Authenticator flowchart](https://raw.githubusercontent.com/shootzemup/authenticator/master/doc/flowchart.png)
+
 ## TODOs:
 * Generate a unique token sent to an authenticated client AND to the assigned server, so that the game server will be sure that an new client is properly identified.
 * Suggestion: encrypt the communications between client and server or not? 
